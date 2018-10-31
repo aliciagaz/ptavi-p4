@@ -17,8 +17,8 @@ except:
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.connect((SERVER, PORT))
     if REGISTER == "register":
-        MSG = ("REGISTER sip:" + DIRECTION + " SIP/2.0\r\n" + "Expires: " +
-               str(EXPIRES) + "\r\n\r\n")
+        MSG = ("REGISTER sip:" + DIRECTION + " SIP/2.0\r\n" + 
+               "Expires: " + str(EXPIRES) + "\r\n\r\n")
         print("Enviando:", MSG)
         my_socket.send(bytes(MSG, 'utf-8') + b'\r\n')
         data = my_socket.recv(1024)
