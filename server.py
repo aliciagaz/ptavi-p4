@@ -50,7 +50,8 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         éste lo procesa. Si empieza por REGISTER guarda el usuario en nuestro
         diccionario y si empieza por EXPIRE podemos ver el tiempo de caducidad
         """
-        self.wfile.write(b"Hemos recibido tu peticion")
+        self.json2registered()
+        self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
         for line in self.rfile:
             msg = line.decode('utf-8')
 
