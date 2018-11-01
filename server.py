@@ -4,9 +4,25 @@
 import socketserver
 import sys
 import time
+import json
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     dic_register= {}
+    
+    def register2json(self):
+        json_file = open ("registered.json", "w")
+        json.dump(self.dic_register, json_file)
+        json_file.close()
+
+    def time_out(self):
+        lista = list(self.dic_register)
+        for client in lista:
+            time_expires = self.dic_register[client][1]
+            gmt_actual = time.strftime("%Y-%m-%d %H:%M:%S", 
+                                        time.gmtime(time.time()))
+            if time_expires < gmt_actual:
+                del self.dic_register[client]
+
     def handle(self):
         self.wfile.write(b"Hemos recibido tu peticion")
         for line in self.rfile:
@@ -21,12 +37,18 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 print("\n" + "--> " + "Cliente con IP " + str(address) +
                       " y puerto " + str(port))
                 print("\n" + "Envía: " + msg)
+                
             elif lista_msg[0] == "Expires:":
                 expires = lista_msg[1]
-                self.dic_register[direction]= [address, expires]
+                gmt_expires = time.strftime("%Y-%m-%d %H:%M:%S", 
+                                        time.gmtime(time.time() + 
+                                                    int(expires)))
+                self.dic_register[direction]= [address, gmt_expires]
                 print("Expire: " + expires)
                 if int(expires) == 0:
                     del self.dic_register[direction]
+        self.register2json()
+        self.time_out()
         print(self.dic_register)
         print("----------------------------------------------------------")
 
